@@ -1,0 +1,181 @@
+API (Application Programming Interface – интерфейс прикладного программирования) –
+это сервер, который позволяет извлекать и отправлять данные с помощью кода. В основном мы
+используем API для получения данных.
+
+Эта часть документации охватывает все интерфейсы Flask. Для частей, где Flask зависит от
+внешних библиотек, мы документируем наиболее важные прямо здесь и предоставляем ссылки на
+каноническую документацию.
+
+Application Object (Объект приложения)
+
+class flask.Flask (import_name, static_url_path = None, static_folder = 'static',
+static_host = None, host_matching = False, subdomain_matching = False,
+template_folder = 'templates', instance_path = None, instance_relative_config = False,
+root_path = None)
+
+Объект flask реализует приложение WSGI  (Web Server Gateway Interface) (Интерфейс шлюза
+веб-сервера) — это интерфейс между веб-серверами и веб-приложениями для Python. mod_wsgi —
+это модуль HTTP-сервера Apache, который позволяет Apache обслуживать приложения Flask, и
+действует как центральный объект. Ему передается имя модуля или пакета приложения. После
+создания он будет действовать как центральный реестр для функций просмотра, правил URL,
+конфигурации шаблона и многого другого.
+     Имя пакета используется для разрешения ресурсов внутри пакета или папки, в которой
+содержится модуль, в зависимости от того, разрешается ли параметр пакета в фактический пакет
+python (папку с файлом __init__.py внутри) или в стандартный модуль ( просто файл .py).
+     Дополнительные сведения о загрузке ресурсов см. в разделе open_resource().
+     Обычно вы создаете экземпляр Flask в своем основном модуле или в файле __init__.py
+вашего пакета следующим образом:
+
+from flask import Flask
+app = Flask(__name__)
+
+О первом параметре
+
+Идея первого параметра состоит в том, чтобы дать Flask представление о том, что принадлежит
+вашему приложению (app). Это имя используется для поиска ресурсов в файловой системе, может
+использоваться расширениями для улучшения отладочной информации и многого другого.
+Поэтому важно, что вы там предоставляете. Если вы используете один модуль, __name__ всегда
+является правильным значением. Однако, если вы используете пакет, обычно рекомендуется жестко
+указать имя вашего пакета.
+Например, если ваше приложение определено в файле yourapplication/app.py, вы должны создать
+его с одной из двух версий ниже:
+
+app = Flask('yourapplication')
+app = Flask(__name__.split('.')[0])
+
+Почему это? Приложение будет работать даже с __name__ благодаря способу поиска ресурсов.
+Однако это сделает отладку более болезненной. Некоторые расширения могут делать предположения
+на основе имени импорта вашего приложения. Например, расширение Flask-SQLAlchemy будет искать
+в вашем приложении код, запускающий SQL-запрос в режиме отладки. Если имя импорта настроено
+неправильно, эта отладочная информация будет потеряна. (Например, он будет собирать запросы
+SQL только в yourapplication.app, а не в yourapplication.views.frontend)
+
+Список изменений
+
+Параметры
+         import_name (str) – имя пакета приложения
+         static_url_path (Optional[str]) — может использоваться для указания другого пути
+для статических файлов в Интернете. По умолчанию используется имя папки static_folder.
+         static_folder (Optional(Необязательно)[Union[str, os.PathLike]]) — папка со
+статическими файлами, которая обслуживается по адресу static_url_path. Относительно приложения
+root_path или абсолютный путь. По умолчанию «static».
+         static_host (Optional(Необязательный) [str]) — хост для использования при добавлении
+статического маршрута. По умолчанию нет. Требуется при использовании host_matching=True с
+настроенной статической_папкой.
+         host_matching (bool) — установить атрибут url_map.host_matching. По умолчанию имеет
+значение Ложь.
+         subdomain_matching (bool) — учитывать субдомен относительно SERVER_NAME при
+сопоставлении маршрутов. По умолчанию имеет значение Ложь.
+         template_folder (Optional[Union[str, os.PathLike]]) — папка, содержащая шаблоны,
+которые должны использоваться приложением. По умолчанию используется папка «templates» в
+корневом каталоге приложения.
+         instance_path (Optional[str]) — альтернативный путь к экземпляру приложения.
+По умолчанию папка «instance» (экземпляр) рядом с пакетом или модулем считается путем к экземпляру.
+         instance_relative_config (bool) — если установлено значение True, относительные
+имена файлов для загрузки конфигурации предполагаются относительными к пути к экземпляру,
+а не к корню приложения.
+         root_path (Optional[str]) — путь к корню файлов приложения. Его следует
+устанавливать вручную только в том случае, если его нельзя определить автоматически, например,
+для пакетов пространства имен.
+
+    aborter (аборт)
+         Экземпляр aborter_class, созданный make_aborter(). Это вызывается flask.abort(),
+    чтобы вызвать ошибки HTTP, и может быть вызвано напрямую.
+         Новое в версии 2.2: Перенесено из flask.abort, который вызывает этот объект.
+
+    aborter_class
+         псевдоним werkzeug.exceptions.Aborter
+
+    add_template_filter(f, name=None)
+         Зарегистрируйте пользовательский фильтр шаблона. Работает точно так же, как декоратор
+    template_filter().
+         Параметры
+                 name (Optional[str]) – необязательное имя фильтра, иначе будет использоваться
+    имя функции.
+                 f (Callable[[...], Any])(Вызываемый[[...], Любой]) –
+         Return type: None (Тип возврата)
+
+    add_template_global (f, name=None)
+         Зарегистрируйте пользовательскую глобальную функцию шаблона. Работает точно так же, как
+    декоратор template_global().
+         Changelog (Список изменений)
+         New in version 0.10.
+         Параметры
+                 name (Optional[str]) – необязательное имя глобальной функции, иначе будет
+    использоваться имя функции.
+                 f (Callable[[...], Any]) –
+         Return type: None
+
+    add_template_test(f, name=None)
+         Зарегистрируйте пользовательский тест шаблона. Работает точно так же, как декоратор
+    template_test().
+         Список изменений
+         Параметры
+                 name (Optional[str]) — необязательное имя теста, иначе будет использоваться
+    имя функции.
+                 f (Вызываемый[[...], bool]) –
+         Return type: None
+
+    add_url_rule (rule, endpoint=None, view_func=None, provide_automatic_options=None, **options)
+    добавить правило URL
+         Зарегистрируйте правило для маршрутизации входящих запросов и создания URL-адресов.
+    Декоратор route() — это ярлык для вызова этого с аргументом view_func. Они эквивалентны:
+
+    @app.route("/")
+    def index():
+        ...
+
+    def index():
+        ...
+    app.add_url_rule("/", view_func=index)    функция просмотра
+
+    См. раздел URL Route Registrations (Регистрация URL-маршрутов).
+
+    Имя конечной точки для маршрута по умолчанию совпадает с именем функции представления, если
+    параметр конечной точки не передан. Ошибка будет вызвана, если функция уже зарегистрирована
+    для конечной точки.
+    Параметр методов по умолчанию имеет значение ["GET"]. HEAD всегда добавляется автоматически,
+    а OPTIONS добавляется автоматически по умолчанию.
+    view_func не обязательно нужно передавать, но если правило должно участвовать в
+    маршрутизации, имя конечной точки должно быть связано с функцией представления в какой-то
+    момент с помощью декоратора endpoint().
+
+    app.add_url_rule("/", endpoint="index")
+
+    @app.endpoint("index")
+    def index():
+        ...
+
+    Если у view_func есть атрибут required_methods, эти методы добавляются к переданным и
+    автоматическим методам. Если у него есть атрибут Provide_automatic_methods, он используется
+    по умолчанию, если параметр не передается.
+
+    Параметры
+             rule (str) — строка правила URL.
+             endpoint (Optional[str]) — имя конечной точки для связи с правилом и функцией
+    просмотра. Используется при маршрутизации и создании URL-адресов.
+    По умолчанию — view_func.__name__.
+             view_func (Optional[Union[Callable[[...], Union[Response, str, bytes, List[Any],
+    Mapping[str, Any], Iterator[str], Iterator[bytes], Tuple[Union[Response, str, bytes,
+    List[Any], Mapping[str, Any], Iterator[str], Iterator[bytes]],
+    Union[Headers, Mapping[str,Union[str, List[str], Tuple[str, .. .]]],
+    Sequence[Tuple[str, Union[str, List[str], Tuple[str, ...]]]]]],
+    Tuple[Union[Response, str, bytes, List[Any], Mapping [str, Any],
+    Iterator[str], Iterator[bytes]], int], Tuple[Union[Response, str, bytes, List[Any],
+    Mapping[str, Any], Iterator[str], Iterator[bytes ]], int, Union[Headers, Mapping[str,
+    Union[str, List[str], Tuple[str, ...]]], Sequence[Tuple[str, Union[str, List[str],
+    Tuple[ str, ...]]]]]],
+    WSGIApplication]], Callable[[...], Awaitable[Union[Response, str,
+    bytes, List[Any], Mapping[str, Any], Iterator[str] , Iterator[bytes], Tuple[Union[Response,
+    str, bytes, List[Any], Mapping[str, Any], Iterator[str], Iterator[bytes]], Union[Headers,
+    Mapping[str, Union[str , Список[строка], Кортеж[строка, ...]]],
+    Sequence[Tuple[str, Union[str, List[str], Tuple[str, ...]]]]]],
+    Tuple[Union[Response, str, bytes, List[Any], Mapping[str, Any] , Iterator[str],
+    Iterator[bytes]], int], Tuple[Union[Response, str, bytes, List[Any], Mapping[str, Any],
+    Iterator[str], Iterator[bytes]],int, Union[Headers, Mapping[str, Union[str, List[str],
+    Tuple[str, ...]]], Sequence[Tuple[str, Union[str, List[str], Tuple[str, ...]]]]]],
+    WSGIApplication]]]]]) – Функция представления для связи с именем конечной точки.
+             Provide_automatic_options (Optional [bool]) — добавьте метод OPTIONS и
+    автоматически отвечайте на запросы OPTIONS.
+             options ((Any) — дополнительные параметры, передаваемые в объект Rule.
+         Return type: None
