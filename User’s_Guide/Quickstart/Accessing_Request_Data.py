@@ -36,10 +36,13 @@ from flask import request
 app = Flask(__name__)
 
 
-@app.route('/hello/')
+@app.route('/hello/', methods=['GET', 'POST'])
 @app.route('/hello/<name>')
 def hello(name=None):
-    return render_template('hello.html', name=name)
+    if request.method == 'POST':
+        return "do_the_login()"
+    else:
+        return render_template('hello.html', name=name)
 
 
 with app.test_request_context('/hello', method='POST'):
@@ -47,7 +50,7 @@ with app.test_request_context('/hello', method='POST'):
     # such as basic assertions:
     # теперь вы можете что-то делать с запросом до конца блока with,
     # например базовые утверждения:
-    assert request.path == '/hello'
+    assert request.path == '/hello'   # утверждать
     assert request.method == 'POST'
 
 if __name__ == '__main__':

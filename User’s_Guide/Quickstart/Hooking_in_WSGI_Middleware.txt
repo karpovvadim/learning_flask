@@ -1,0 +1,11 @@
+Hooking in WSGI Middleware (Перехват в промежуточном программном обеспечении WSGI)
+
+Чтобы добавить промежуточное ПО WSGI в ваше приложение Flask, оберните атрибут wsgi_app
+приложения. Например, чтобы применить промежуточное ПО Werkzeug ProxyFix для работы за Nginx:
+
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+Оболочка app.wsgi_app вместо app означает, что app по-прежнему указывает на ваше приложение
+Flask, а не на промежуточное ПО, поэтому вы можете продолжать использовать и настраивать
+app (приложение) напрямую.
