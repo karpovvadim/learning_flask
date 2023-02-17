@@ -103,3 +103,5 @@ $ flask --app flaskr --debug run
 Если другая программа уже использует порт 5000, вы увидите OSError: [Errno 98] или 
 OSError: [WinError 10013] при попытке запуска сервера. См. Address already in use 
 (Адрес уже используется), чтобы узнать, как с этим справиться.
+
+Continue to Define and Access the Database.

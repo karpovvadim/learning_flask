@@ -41,5 +41,14 @@ def create_app(test_config=None):
     from flaskr import auth, blog
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(blog.bp)
+
+    # make url_for('index') == url_for('blog.index') in another app, you might define
+    # a separate main index here with app.route, while giving the blog blueprint a
+    # url_prefix, but for the tutorial the blog will be the main index
+    # (создайте url_for('index') == url_for('blog.index') в другом приложении, вы можете
+    # определить здесь отдельный основной индекс с помощью app.route, присвоив плану блога
+    # url_prefix, но для учебника блог будет основной индекс)
+    app.add_url_rule("/", endpoint="index")
 
     return app

@@ -147,3 +147,5 @@ $ flask --app flaskr init-db
 Initialized the database.
 
 Теперь в папке экземпляра вашего проекта будет файл flaskr.sqlite.
+
+Continue to Blueprints and Views.

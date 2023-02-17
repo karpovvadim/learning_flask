@@ -71,17 +71,14 @@ def hello():
 .gitignore
 
 venv/
-
 *.pyc
 __pycache__/
-
 instance/
-
 .pytest_cache/
 .coverage
 htmlcov/
-
 dist/
 build/
 *.egg-info/
 
+Continue to Application Setup.
