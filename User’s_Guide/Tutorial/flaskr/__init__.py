@@ -37,4 +37,9 @@ def create_app(test_config=None):
     from flaskr import db
     db.init_app(app)
 
+    # apply the blueprints to the app (применить чертежи к приложению)
+    from flaskr import auth, blog
+
+    app.register_blueprint(auth.bp)
+
     return app
