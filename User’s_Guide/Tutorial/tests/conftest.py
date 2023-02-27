@@ -1,5 +1,6 @@
 import os
 import tempfile
+
 import pytest
 from flaskr import create_app
 from flaskr.db import get_db, init_db
@@ -10,16 +11,18 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
 
 @pytest.fixture
 def app():
-    db_fd, db_path = tempfile.mkstemp()
+    db_fd, db_path = tempfile.mkstemp()  # Вызываемая пользователем функция для создания и
+    # возврата уникального временного файла. Возвращаемое значение представляет собой пару
+    # (fd, name), где fd — это файловый дескриптор, возвращаемый os.open, а name — это имя файла.
 
     app = create_app({
         'TESTING': True,
         'DATABASE': db_path,
     })
-
+    print("app =", app)
     with app.app_context():
         init_db()
-        get_db().executescript(_data_sql)
+        get_db().executescript(_data_sql)  # исполняемый скрипт
 
     yield app
 

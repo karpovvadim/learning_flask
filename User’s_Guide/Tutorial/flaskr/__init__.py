@@ -12,7 +12,8 @@ def create_app(test_config=None):
         # (секрет по умолчанию, который должен быть переопределен конфигурацией экземпляра)
         SECRET_KEY="dev",
         # store the database in the instance folder (сохранить базу данных в папке экземпляра)
-        DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
+        DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),  # (app.Содержит путь к
+        # папке экземпляра + "flaskr.sqlite")
     )
 
     if test_config is None:
@@ -34,11 +35,11 @@ def create_app(test_config=None):
         return "Hello, World!"
 
     # register the database commands (зарегистрировать команды базы данных)
-    from flaskr import db
+    from . import db
     db.init_app(app)
 
     # apply the blueprints to the app (применить чертежи к приложению)
-    from flaskr import auth, blog
+    from . import auth, blog
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
